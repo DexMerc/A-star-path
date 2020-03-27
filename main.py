@@ -1,51 +1,53 @@
 import pygame
-import numpy as np
-import random
 import pathfinder
 
 s_width = 400
 s_height = 500
-n = 5
-m = 6
+n = 10
+m = 10
+
 
 def game(maze, sol):
     pygame.font.init()
 
     screen = pygame.display.set_mode((s_height, s_width))
-
     pygame.display.set_caption("A* pathfinding")
-    running = True
-    while running:
+
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-                continue
+                pygame.quit()
+                quit()
         screen.fill((169, 169, 169))
         for i in range(len(maze)):
             for j in range(len(maze[i])):
-                draw_rect(screen, maze[i][j], i, j)
+                if (i, j) in sol:
+                    draw_rect(screen, maze[i][j], i, j, (0, 255, 0))
+                else:
+                    draw_rect(screen, maze[i][j], i, j, (0, 0, 0))
         pygame.display.update()
 
 
-def draw_rect(screen, text, x, y):
+def draw_rect(screen, text, x, y, color):
+    pygame.draw.rect(screen, (255, 255, 255), [s_height / n * y + 10, s_width / m * x + 10, 20, 20])
     font = pygame.font.SysFont('comicsans', 30)
-    label = font.render(str(text), 1, (255,255,255))
-    screen.blit(label, (s_width/m*x, s_height/n*y))
-
-
-def create_maze():
-    arr = np.zeros([n, m])
-
-    for i in range(len(arr)):
-        for j in range(len(arr[i])):
-            arr[i][j] = int(random.random() * 10)
-
-    return arr
+    label = font.render(str(text), 1, color)
+    screen.blit(label, (s_height / n * y + 15, s_width / m * x + 10))
 
 
 def main():
-    maze = create_maze()
-    grid_sol = pathfinder.a_star(maze, (0, 0), (n-1, m-1))
+    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    grid_sol = pathfinder.a_star(maze, (0, 2), (len(maze) - 1, len(maze[0]) - 1))
+    print(grid_sol)
     game(maze, grid_sol)
 
 

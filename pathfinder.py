@@ -1,9 +1,6 @@
 import numpy as np
 import random
 
-open_list = []
-closed_list = []
-
 
 class Node(object):
     def __init__(self, parent, position):
@@ -16,9 +13,8 @@ class Node(object):
 
 
 def a_star(maze, start, end):
-    global open_list
-    global closed_list
-    global n
+    open_list = []
+    closed_list = []
     start_node = Node(None, start)
     end_node = Node(None, end)
     start_node.g = start_node.h = start_node.f = 0
@@ -43,6 +39,7 @@ def a_star(maze, start, end):
             while curr.parent is not None:
                 path.append(curr.position)
                 curr = curr.parent
+            path.append(start)
             return path[::-1]
 
         children = []
@@ -51,10 +48,14 @@ def a_star(maze, start, end):
             for j in [-1, 0, 1]:
                 if i == 0 and j == 0:
                     continue
-                temp_pos = [current_node.position[0] + i, current_node.position[1] + j]
-                if temp_pos[0] < 0 or temp_pos[0] >= len(maze) or temp_pos[1] < 0 or temp_pos[1] >= len(maze[0]):
+                temp_pos = (current_node.position[0] + i, current_node.position[1] + j)
+
+                a = temp_pos[0]
+                b = temp_pos[1]
+
+                if a < 0 or a >= len(maze) or b < 0 or b >= len(maze[0]):
                     continue
-                if maze[temp_pos[0]][temp_pos[1]] == 0:
+                if maze[a][b] != 0:
                     continue
                 temp_node = Node(current_node, temp_pos)
                 children.append(temp_node)
@@ -64,24 +65,39 @@ def a_star(maze, start, end):
                 if child == closed_child:
                     continue
 
-            child.g = current_node.g + maze[current_node.position[0]][current_node.position[1]]
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
-                        (child.position[1] - end_node.position[1]) ** 2)
+            child.g = current_node.g + 1
+            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
-            # Child is already in the open list
             for open_node in open_list:
                 if child == open_node and child.g > open_node.g:
                     continue
 
-            # Add the child to the open list
             open_list.append(child)
 
 
-# def ret_path(current_node):
-#     path = []
-#     curr = current_node
-#     while curr.parent is not None:
-#         path.append(curr.position)
-#         curr = curr.parent
-#     return path[::-1]
+def main():
+    n = 7
+    m = 8
+    arr = np.zeros([n, m])
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            arr[i][j] = random.choice((0,1))
+
+    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    # print(arr)
+    r = a_star(maze, (0, 0), (7, 8))
+    print(r)
+
+
+if __name__ == '__main__':
+    main()
